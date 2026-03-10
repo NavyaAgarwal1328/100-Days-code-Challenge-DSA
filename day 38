@@ -1,0 +1,28 @@
+int* maxSlidingWindow(int* nums, int numsSize, int k, int* returnSize) {
+    
+    int *result = (int*)malloc((numsSize - k + 1) * sizeof(int));
+    int *dq = (int*)malloc(numsSize * sizeof(int)); // deque storing indices
+    
+    int front = 0, rear = -1;
+    *returnSize = 0;
+
+    for(int i = 0; i < numsSize; i++) {
+
+        // Remove indices outside the window
+        if(front <= rear && dq[front] <= i - k)
+            front++;
+
+        // Remove smaller elements from back
+        while(front <= rear && nums[dq[rear]] <= nums[i])
+            rear--;
+
+        // Insert current index
+        dq[++rear] = i;
+
+        // Store maximum for window
+        if(i >= k - 1)
+            result[(*returnSize)++] = nums[dq[front]];
+    }
+
+    return result;
+}
