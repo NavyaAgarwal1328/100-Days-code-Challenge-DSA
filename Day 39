@@ -1,0 +1,42 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int* topKFrequent(int* nums, int numsSize, int k, int* returnSize) {
+    
+    int i;
+
+    // Step 1: Find max possible frequency
+    int max = numsSize;
+
+    // Frequency array
+    int *count = calloc(20001, sizeof(int));
+
+    for(i = 0; i < numsSize; i++)
+        count[nums[i] + 10000]++;
+
+    // Bucket array
+    int **bucket = malloc((numsSize + 1) * sizeof(int*));
+    int *bucketSize = calloc(numsSize + 1, sizeof(int));
+
+    for(i = 0; i <= numsSize; i++)
+        bucket[i] = malloc(numsSize * sizeof(int));
+
+    for(i = 0; i < 20001; i++){
+        if(count[i] > 0){
+            int freq = count[i];
+            bucket[freq][bucketSize[freq]++] = i - 10000;
+        }
+    }
+
+    int *result = malloc(k * sizeof(int));
+    int index = 0;
+
+    for(i = numsSize; i >= 0 && index < k; i--){
+        for(int j = 0; j < bucketSize[i] && index < k; j++){
+            result[index++] = bucket[i][j];
+        }
+    }
+
+    *returnSize = k;
+    return result;
+}
