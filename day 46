@@ -1,0 +1,53 @@
+#include <stdlib.h>
+
+// Queue
+struct TreeNode* queue[2000];
+int front = 0, rear = 0;
+
+void enqueue(struct TreeNode* node) {
+    queue[rear++] = node;
+}
+
+struct TreeNode* dequeue() {
+    return queue[front++];
+}
+
+int isEmpty() {
+    return front == rear;
+}
+
+int queueSize() {
+    return rear - front;
+}
+
+int** levelOrder(struct TreeNode* root, int* returnSize, int** returnColumnSizes) {
+    int** result = (int**)malloc(2000 * sizeof(int*));
+    *returnColumnSizes = (int*)malloc(2000 * sizeof(int));
+    *returnSize = 0;
+
+    if (root == NULL) return result;
+
+    // reset queue (important for multiple test cases)
+    front = rear = 0;
+
+    enqueue(root);
+
+    while (!isEmpty()) {
+        int size = queueSize();
+        int* level = (int*)malloc(size * sizeof(int));
+
+        for (int i = 0; i < size; i++) {
+            struct TreeNode* node = dequeue();
+            level[i] = node->val;
+
+            if (node->left) enqueue(node->left);
+            if (node->right) enqueue(node->right);
+        }
+
+        result[*returnSize] = level;
+        (*returnColumnSizes)[*returnSize] = size;
+        (*returnSize)++;
+    }
+
+    return result;
+}
