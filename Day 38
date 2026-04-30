@@ -1,29 +1,28 @@
-int leastInterval(char* tasks, int tasksSize, int n) {
-    int freq[26] = {0};
+int* maxSlidingWindow(int* nums, int numsSize, int k, int* returnSize) {
     
-    // count frequency
-    for(int i = 0; i < tasksSize; i++){
-        freq[tasks[i] - 'A']++;
+    int *result = (int*)malloc((numsSize - k + 1) * sizeof(int));
+    int *dq = (int*)malloc(numsSize * sizeof(int)); // deque storing indices
+    
+    int front = 0, rear = -1;
+    *returnSize = 0;
+
+    for(int i = 0; i < numsSize; i++) {
+
+        // Remove indices outside the window
+        if(front <= rear && dq[front] <= i - k)
+            front++;
+
+        // Remove smaller elements from back
+        while(front <= rear && nums[dq[rear]] <= nums[i])
+            rear--;
+
+        // Insert current index
+        dq[++rear] = i;
+
+        // Store maximum for window
+        if(i >= k - 1)
+            result[(*returnSize)++] = nums[dq[front]];
     }
-    
-    // find max frequency
-    int maxFreq = 0;
-    for(int i = 0; i < 26; i++){
-        if(freq[i] > maxFreq)
-            maxFreq = freq[i];
-    }
-    
-    // count tasks with max frequency
-    int countMax = 0;
-    for(int i = 0; i < 26; i++){
-        if(freq[i] == maxFreq)
-            countMax++;
-    }
-    
-    int result = (maxFreq - 1) * (n + 1) + countMax;
-    
-    if(result > tasksSize)
-        return result;
-    else
-        return tasksSize;
+
+    return result;
 }
